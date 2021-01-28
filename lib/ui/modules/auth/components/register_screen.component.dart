@@ -1,9 +1,12 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:PromoMeCompany/bloc/user/user_bloc.dart';
+import 'package:PromoMeCompany/data/repositories/user_repository.dart';
 import 'package:PromoMeCompany/ui/common/custom_raised_button.dart';
 import 'package:PromoMeCompany/ui/common/form.input.dart';
+import 'package:PromoMeCompany/ui/common/user_circular_photo.dart';
 import 'package:PromoMeCompany/utils/validators.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +14,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:badges/badges.dart';
 
 import '../../../../env.dart';
 import '../../../../main.dart';
@@ -34,6 +40,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   FirebaseMessaging firebaseMessaging;
   String firebaseToken;
 
+  String imageSRC;
+  String fileName;
+  bool fromFile=false;
+
 
   bool _obscureTextLogin = true;
 
@@ -55,6 +65,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     platform = Platform.isIOS ? "IOS" : "Android";
     firebaseToken = "";
+    imageSRC="http://192.168.1.5/promosme/public/images/profile.png";
+    print(imageSRC);
     firebaseMessaging = new FirebaseMessaging();
     firebaseMessaging.getToken().then((String token) {
       assert(token != null);
@@ -101,7 +113,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.only(top: 138),
                   child: Hero(tag: "Logo", child: Image.asset("assets/images/logo.png",height: screenAwareSize(100, context),width: screenAwareWidth(100, context))),
                 ),
-
+                Center(
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    margin: EdgeInsets.only(bottom: 10),
+                    child: GestureDetector(
+                      onTap: getImage,
+                      child: Badge(
+                        badgeColor: Colors.red,
+                        badgeContent: Icon(Icons.edit),
+                        position: BadgePosition.topStart(top: 5),
+                        child: UserCircularPhoto(photo: imageSRC,fromFile: fromFile),
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(height: AppDimens.marginDefault12),
 
                 Text(AppLocalizations.of(context).translate("welcome"), style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -192,6 +219,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Future getImage() async {
+    PickedFile image = await ImagePicker().getImage(source: ImageSource.gallery, imageQuality: 80);
+    File croppedImage=await ImageCropper.cropImage(sourcePath: image.path,cropStyle: CropStyle.circle,aspectRatio:CropAspectRatio(ratioX: 1,ratioY: 1) );
+    String base64Image = base64Encode(croppedImage.readAsBytesSync());
+    fileName = image.path.split("/").last;
+      setState(() {
+        fromFile=true;
+        imageSRC=base64Image;
+      });
   }
 
   void onLogin() {

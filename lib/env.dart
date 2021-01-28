@@ -17,7 +17,7 @@ class Env{
   static int databaseVersion=1;
 
 //todo:please Set API Base Route
-  static String _localUrl = 'http://192.168.1.2/promosme/public/api';
+  static String _localUrl = 'http://192.168.1.5/promosme/public/api';
   static String _productionUrl = 'http://amr.amrnrd.com/api';
   static devMode mode = devMode.development;
 
