@@ -1,4 +1,5 @@
 import 'package:PromoMeCompany/data/models/user_model.dart';
+import 'package:PromoMeCompany/ui/modules/add_video/add_video_page.dart';
 import 'package:PromoMeCompany/ui/modules/auth/auth.page.dart';
 import 'package:PromoMeCompany/ui/modules/navigation/home.navigation.dart';
 import 'package:PromoMeCompany/ui/modules/splash/splash.page.dart';
@@ -45,7 +46,16 @@ class RouteGenerator {
           settings: RouteSettings(name: Env.saleItemPage),
           builder: (_) => SaleItemDetailsPage(saleItem: args),
         );
-
+      case Env.saleItemPage:
+        return MaterialPageRoute(
+          settings: RouteSettings(name: Env.saleItemPage),
+          builder: (_) => SaleItemDetailsPage(saleItem: args),
+        );
+      case Env.addVideoPage:
+        return MaterialPageRoute(
+          settings: RouteSettings(name: Env.addVideoPage),
+          builder: (_) => AddVideoPage(),
+        );
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

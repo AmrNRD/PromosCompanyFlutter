@@ -6,7 +6,7 @@ import 'package:PromoMeCompany/data/repositories/cycle_repository.dart';
 import 'package:PromoMeCompany/data/repositories/post_repository.dart';
 import 'package:PromoMeCompany/data/repositories/store_repository.dart';
 import 'package:PromoMeCompany/data/repositories/video_repository.dart';
-import 'package:PromoMeCompany/ui/modules/cycles/cycles.tab.dart';
+import 'package:PromoMeCompany/ui/modules/cycles/videos.tab.dart';
 import 'package:PromoMeCompany/utils/sizeConfig.dart';
 
 import 'app.dart';

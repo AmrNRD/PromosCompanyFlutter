@@ -26,8 +26,6 @@ class _CommentsSheetState extends State<CommentsSheet> {
   void initState() {
     super.initState();
     _textEditingController=new TextEditingController();
-    print(Root.user.id);
-    print(widget.selectedPost.comments[1].user.id);
   }
   @override
   Widget build(BuildContext context) {
@@ -133,7 +131,6 @@ class _CommentsSheetState extends State<CommentsSheet> {
                             padding: EdgeInsets.all(10),
                             child: Icon(Icons.send)
                         ),
-
                       )),
                 ],
               ),
@@ -149,5 +146,10 @@ class _CommentsSheetState extends State<CommentsSheet> {
       BlocProvider.of<PostBloc>(context).add(SendCommentPostEvent(widget.selectedPost,_textEditingController.text));
       _textEditingController.text="";
     }
+  }
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
   }
 }

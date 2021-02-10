@@ -72,14 +72,11 @@ class CommentCardComponent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              InkWell(
-                onTap: insideTheProfile?null:()=>Navigator.of(context).pushNamed(Env.profilePage,arguments: comment.user),
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    comment?.user?.name??"",
-                    style: Theme.of(context).textTheme.headline4.copyWith(fontWeight: FontWeight.w700),
-                  ),
+              Container(
+                margin: EdgeInsets.only(bottom: 8),
+                child: Text(
+                  comment?.user?.name??"",
+                  style: Theme.of(context).textTheme.headline4.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
               Text(

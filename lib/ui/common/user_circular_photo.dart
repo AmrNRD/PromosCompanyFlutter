@@ -25,7 +25,7 @@ class UserCircularPhoto extends StatelessWidget {
         borderRadius: BorderRadius.circular(100.0),
         child: fromFile
             ? Image.file(
-                photo.data,
+                photo,
                 fit: BoxFit.fill,
               )
             : CachedNetworkImage(

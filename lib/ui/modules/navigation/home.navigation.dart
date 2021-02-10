@@ -1,5 +1,7 @@
+import 'package:PromoMeCompany/bloc/post/post_bloc.dart';
 import 'package:PromoMeCompany/bloc/user/user_bloc.dart';
-import 'package:PromoMeCompany/ui/modules/cycles/cycles.tab.dart';
+import 'package:PromoMeCompany/ui/common/write_post_sheets.dart';
+import 'package:PromoMeCompany/ui/modules/cycles/videos.tab.dart';
 import 'package:PromoMeCompany/ui/modules/home/home.tab.dart';
 import 'package:PromoMeCompany/ui/modules/profile/profile.page.dart';
 import 'package:PromoMeCompany/ui/modules/store/store.tab.dart';
@@ -14,6 +16,7 @@ import '../../../env.dart';
 import '../home/home.tab.dart';
 
 class HomeNavigationPage extends StatefulWidget {
+  static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   _HomeNavigationPageState createState() => _HomeNavigationPageState();
 }
@@ -38,7 +41,7 @@ class _HomeNavigationPageState extends State<HomeNavigationPage> with TickerProv
   List<Widget> body = [
     HomeTabPage(),
     StoreTab(),
-    CyclesTab(),
+    VideosTab(),
     ProfileTab(),
   ];
   int _currentSelectedTab = 0;
@@ -48,15 +51,21 @@ class _HomeNavigationPageState extends State<HomeNavigationPage> with TickerProv
       _currentSelectedTab = index;
     });
   }
-  
+
+  PersistentBottomSheetController _controller2;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      key: HomeNavigationPage.scaffoldKey,
+      body:SafeArea(
         child: body[_currentSelectedTab],
+        right:false,
+        left: false,
+        bottom: false,
       ),
       floatingActionButton: FloatingActionButton(
-        heroTag: "scanButton",
+        heroTag: "addButton",
         child: Icon(FontAwesomeIcons.plus),
         backgroundColor: AppColors.accentColor1,
         onPressed: onAddClick,
@@ -88,5 +97,35 @@ class _HomeNavigationPageState extends State<HomeNavigationPage> with TickerProv
   }
 
   void onAddClick() {
+    switch(_currentSelectedTab){
+      case 0:
+        onWriteClickClick();
+        break;
+      case 2:
+        Navigator.pushNamed(context, Env.addVideoPage);
+    }
+  }
+
+  Future onWriteClickClick() async {
+    _controller2 = await HomeNavigationPage.scaffoldKey.currentState.showBottomSheet(
+          (builder) {
+        return StatefulBuilder(
+            builder: (context, setState) {
+              return SafeArea(
+                child: FractionallySizedBox(
+                  heightFactor: 0.45,
+                  child:  WritePostSheet(postInserted: postInserted,),
+                ),
+              );
+            });
+      },
+      backgroundColor: Colors.transparent,
+      elevation: 10,
+    );
+
+  }
+
+  postInserted() {
+    BlocProvider.of<PostBloc>(context).add(GetAllPastsEvent());
   }
 }

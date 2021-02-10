@@ -12,7 +12,7 @@ abstract class UserRepository {
 
   Future<User> login(String email, String password,String platform,String firebaseToken);
 
-  Future<User> signUp(String name,String email, String password,String platform,String firebaseToken,String mobile,String city,String gender,double lat,double long,String avater);
+  Future<User> signUp(String name,String email, String password,String platform,String firebaseToken,String mobile,String city,String gender,double lat,double long, String avatar,String photoName,String address);
 
   Future<User> update(User user);
 
@@ -55,7 +55,7 @@ class UserDataRepository implements UserRepository {
 
   @override
   Future<User> login(String email, String password,  String platform,String firebaseToken) async {
-    final responseData = await APICaller.postData("/auth/login", body: {"email":email, "password":password,"firebase_token":firebaseToken, "platform":platform,"type":"user"});
+    final responseData = await APICaller.postData("/auth/login", body: {"email":email, "password":password,"firebase_token":firebaseToken, "platform":platform,"type":"company"});
     User user = User.fromJson(responseData['user']);
     DateTime _expiryDate = DateTime.parse(responseData['expires_at']);
     final prefs = await SharedPreferences.getInstance();
@@ -123,8 +123,8 @@ class UserDataRepository implements UserRepository {
   }
 
   @override
-  Future<User> signUp(String name,String email, String password, String platform, String firebaseToken, String mobile, String city, String gender, double lat, double long, String avater) async {
-    final responseData = await APICaller.postData("/auth/signup", body: {"name":name,"mobile":mobile,"email":email, "password":password,"firebase_token":firebaseToken,"city":city,"gender":gender,"lat":lat,"long":long,"avater":avater, "platform":platform,"type":"admin"});
+  Future<User> signUp(String name,String email, String password, String platform, String firebaseToken, String mobile, String city, String gender, double lat, double long, String avatar,String photoName,String address) async {
+    final responseData = await APICaller.postData("/auth/signup", body: {"name":name,"mobile":mobile,"email":email, "password":password,"firebase_token":firebaseToken,"city":city,"gender":gender,"lat":lat,"long":long, "platform":platform,"type":"company",'photo_type':"base64",'photo':avatar,'photo_name':photoName,'address':address});
     User user = User.fromJson(responseData['user']);
     DateTime _expiryDate = DateTime.parse(responseData['expires_at']);
     final prefs = await SharedPreferences.getInstance();

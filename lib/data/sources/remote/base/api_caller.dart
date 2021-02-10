@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime_type/mime_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http_parser/http_parser.dart';
 
 import '../../../../env.dart';
 import 'app.exceptions.dart';
@@ -78,6 +80,55 @@ class APICaller {
     var dataRetrived = returnResponse(res);
     return dataRetrived;
   }
+
+  static Future<dynamic> multiPartData(String requestType,String urlExtension, List<File> files,{Map body, bool authorizedHeader = false,outerAPI=false,bool isVideo=false}) async {
+    Map<String, String> headers;
+    if (authorizedHeader) {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      headers = {
+        "Content-Type": "multipart/form-data",
+        "Accept": "application/json",
+        "Authorization": token,
+      };
+    } else {
+      headers = APICaller.headers;
+      headers['Content-Type']='multipart/form-data';
+    }
+    if (body == null) {
+      body = {};
+    }
+
+    var request = http.MultipartRequest(requestType, Uri.parse(outerAPI?urlExtension:Env.baseUrl + urlExtension));
+    body.forEach((key, value) {
+      request.fields[key]=value.toString();
+    });
+    headers.forEach((key, value) {
+      request.headers[key]=value.toString();
+    });
+    for(File file in files)
+    {
+
+      request.files.add(
+          http.MultipartFile(
+              'video',
+              file.readAsBytes().asStream(),
+              file.lengthSync(),
+              filename: file.path.split("/").last,
+          )
+      );
+    }
+    var resStream = await request.send();
+    var res=await http.Response.fromStream(resStream);
+    debugPrint(requestType+' Multipart '+Env.baseUrl + urlExtension);
+    debugPrint('Body: '+body.toString());
+    debugPrint('Status Code: '+res.statusCode.toString());
+    debugPrint(res.body.toString());
+    var dataRetrived = returnResponse(res);
+    return dataRetrived;
+  }
+
+
 
   static Future<dynamic> putData(String urlExtension, {Map body, bool authorizedHeader = false}) async {
     Map<String, String> headers;

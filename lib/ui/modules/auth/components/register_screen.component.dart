@@ -40,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   FirebaseMessaging firebaseMessaging;
   String firebaseToken;
 
-  String imageSRC;
+  var imageSRC;
   String fileName;
   bool fromFile=false;
 
@@ -110,9 +110,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(top: 138),
+                  padding: const EdgeInsets.only(top: AppDimens.marginDefault12),
                   child: Hero(tag: "Logo", child: Image.asset("assets/images/logo.png",height: screenAwareSize(100, context),width: screenAwareWidth(100, context))),
                 ),
+
+                SizedBox(height: 12),
+
                 Center(
                   child: Container(
                     width: 120,
@@ -124,33 +127,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         badgeColor: Colors.red,
                         badgeContent: Icon(Icons.edit),
                         position: BadgePosition.topStart(top: 5),
-                        child: UserCircularPhoto(photo: imageSRC,fromFile: fromFile),
+                        child: UserCircularPhoto(photo: imageSRC,fromFile: fromFile,size: 120),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: AppDimens.marginDefault12),
-
-                Text(AppLocalizations.of(context).translate("welcome"), style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 25, fontWeight: FontWeight.bold)),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: AppDimens.marginDefault4),
-                  child: Text(AppLocalizations.of(context).translate("please_sign_in_to_continue"), style: Theme.of(context).textTheme.subtitle1),
-                ),
-
                 SizedBox(height: AppDimens.marginEdgeCase24),
-
                 //name
                 FormInputField(title: "name", focusNode: _nameFocusNode, onSave: (value) => _authData['name'] = value,validator:(value)=>Validator(context).isNotEmpty(value) ,nextFocusNode: _emailFocusNode),
                 //email
                 FormInputField(title: "email", focusNode: _emailFocusNode, onSave: (value) => _authData['email'] = value,validator:(value)=>Validator(context).isEmail(value) ,nextFocusNode: _phoneFocusNode),
                 //phone number
-                FormInputField(title: "phone_number", focusNode: _phoneFocusNode, onSave: (value) => _authData['phone'] = value,validator:(value)=>Validator(context).isPhoneNumber(value) ,nextFocusNode: _addressFocusNode),
+                FormInputField(title: "phone_number", focusNode: _phoneFocusNode, onSave: (value) => _authData['phone'] = value,validator:(value)=>Validator(context).isPhoneNumber(value),nextFocusNode: _addressFocusNode),
                 //address
-                FormInputField(title: "address", focusNode: _addressFocusNode, onSave: (value) => _authData['address'] = value,validator:(value)=>Validator(context).isNotEmpty(value) ,nextFocusNode: _aboutMeFocusNode,textInputType: TextInputType.multiline,minLine: 5,maxLine: 6),
+                FormInputField(title: "address", focusNode: _addressFocusNode, onSave: (value) => _authData['address'] = value,validator:(value)=>Validator(context).isNotEmpty(value),nextFocusNode: _aboutMeFocusNode,textInputType: TextInputType.multiline,minLine: 5,maxLine: 6),
                 //aboutMe
-                FormInputField(title: "about_us", focusNode: _aboutMeFocusNode, onSave: (value) => _authData['about_me'] = value,validator:(value)=>Validator(context).isNotEmpty(value) ,nextFocusNode: _aboutMeFocusNode,textInputType: TextInputType.multiline,minLine: 5,maxLine: 6),
-
+                FormInputField(title: "about_us", focusNode: _aboutMeFocusNode, onSave: (value) => _authData['about_me'] = value,nextFocusNode: _aboutMeFocusNode,textInputType: TextInputType.multiline,minLine: 5,maxLine: 6),
                 //city
                 Container(
                   margin: EdgeInsets.symmetric(vertical: AppDimens.marginDefault12),
@@ -195,9 +187,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onChanged: (value) {setState(() {_authData['city'] = value;});
                       }),
                 ),
-
-
-
                 //password
                 FormInputField(
                   title: "password",
@@ -228,7 +217,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     fileName = image.path.split("/").last;
       setState(() {
         fromFile=true;
-        imageSRC=base64Image;
+        imageSRC=croppedImage;
+        _authData['avatar']=base64Image;
+        _authData['photo_name']=fileName;
       });
   }
 
@@ -236,14 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      if( _authData['gender']==null)
-      {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context).translate("gender_not_entered"), style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.white),),
-          backgroundColor: AppColors.accentColor1,
-        ));
-        return;
-      }
+
     if( _authData['city']==null)
     {
       Scaffold.of(context).showSnackBar(SnackBar(
@@ -253,7 +237,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-      BlocProvider.of<UserBloc>(context)..add(SignUpUser(email: _authData['email'], name:  _authData['name'] , mobile: _authData['phone'], city: _authData['city'], gender:  _authData['gender'], lat: null, long: null, avatar: null, password: _authData['password'], passwordConfirmation: _authData['password'], platform: platform));
+      BlocProvider.of<UserBloc>(context)..add(SignUpUser(email: _authData['email'], name:  _authData['name'] , mobile: _authData['phone'], city: _authData['city'], gender:  _authData['gender'], lat: null, long: null, avatar: _authData['avatar'],photoName: _authData['photo_name'], password: _authData['password'], passwordConfirmation: _authData['password'], platform: platform,address: _authData['address']));
     }
   }
 

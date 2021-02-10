@@ -32,7 +32,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final User user = await userRepository.login(event.email, event.password, event.platform, event.firebaseToken);
         yield UserLoaded(user);
       } else if (event is SignUpUser) {
-        final User user = await userRepository.signUp(event.name, event.email, event.password, event.platform, event.firebaseToken, event.mobile, event.city, event.gender, event.lat, event.long, null);
+        final User user = await userRepository.signUp(event.name, event.email, event.password, event.platform, event.firebaseToken, event.mobile, event.city, event.gender, event.lat, event.long, event.avatar,event.photoName,event.address);
         yield UserLoaded(user);
       }else if (event is LogoutUser) {
         Root.user = await userRepository.logout();

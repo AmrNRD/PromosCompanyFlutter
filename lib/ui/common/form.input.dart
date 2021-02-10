@@ -9,6 +9,7 @@ class FormInputField extends StatefulWidget {
   final TextInputType textInputType;
   final Function onSave;
   final Function validator;
+  final Function onFieldSubmitted;
   final TextEditingController textEditingController;
   final FocusNode focusNode;
   final FocusNode nextFocusNode;
@@ -19,6 +20,8 @@ class FormInputField extends StatefulWidget {
   final bool obscureText;
   final int minLine;
   final int maxLine;
+  final bool outterBorder;
+  final bool useLabel;
 
   const FormInputField(
       {Key key,
@@ -33,10 +36,12 @@ class FormInputField extends StatefulWidget {
       this.textInputAction,
       this.isRequired = false,
       this.obscureText=false,
+      this.outterBorder=false,
+      this.useLabel=false,
       this.prefixIcon,
       this.suffixIcon,
         this.minLine=1,
-        this.maxLine=1})
+        this.maxLine=1, this.onFieldSubmitted})
       : super(key: key);
 
   @override
@@ -59,15 +64,11 @@ class _FormInputFieldState extends State<FormInputField> {
         focusNode: widget.focusNode,
         controller: widget.textEditingController,
         obscureText: widget.obscureText,
-        keyboardType: widget.textInputType != null
-            ? widget.textInputType
-            : TextInputType.text,
-        validator: widget.validator ??
-                (value) {
+        keyboardType: widget.textInputType != null ? widget.textInputType : TextInputType.text,
+        validator: widget.validator ?? (value) {
               if (widget.isRequired) {
                 if (value.isEmpty) {
-                  return AppLocalizations.of(context)
-                      .translate('invalid_value');
+                  return AppLocalizations.of(context).translate('invalid_value');
                 }
                 return null;
               } else
@@ -77,26 +78,25 @@ class _FormInputFieldState extends State<FormInputField> {
         style: Theme.of(context).textTheme.headline3,
         minLines: widget.minLine,
         maxLines: widget.maxLine,
-        textInputAction:
-        widget.textInputAction ?? widget.nextFocusNode != null
-            ? TextInputAction.next
-            : TextInputAction.done,
+        textInputAction: widget.nextFocusNode != null ? TextInputAction.next : TextInputAction.done,
         onEditingComplete: () {
           widget.focusNode.unfocus();
         },
         onFieldSubmitted: (term) {
           widget.focusNode.unfocus();
-          if (widget.nextFocusNode != null)
+          if(widget.onFieldSubmitted!=null)
+            widget.onFieldSubmitted();
+          else if (widget.nextFocusNode != null)
             FocusScope.of(context).requestFocus(widget.nextFocusNode);
         },
         decoration: InputDecoration(
           icon: widget.prefixIcon,
-          border: OutlineInputBorder(borderSide: BorderSide.none),
-          focusedBorder:  OutlineInputBorder(borderSide: BorderSide.none),
+          border: widget.outterBorder?OutlineInputBorder(borderRadius: BorderRadius.circular(8.0),borderSide:BorderSide(color: Theme.of(context).textTheme.headline3.color) ):OutlineInputBorder(borderSide: BorderSide.none),
+          focusedBorder:  widget.outterBorder?OutlineInputBorder(borderRadius: BorderRadius.circular(8.0),borderSide:BorderSide(color: Theme.of(context).accentColor)):OutlineInputBorder(borderSide: BorderSide.none),
           fillColor:Theme.of(context).cardColor,
           filled: true,
-
           hintText: AppLocalizations.of(context).translate(widget.hint??widget.title,defaultText: widget.hint??widget.title),
+          labelText: widget.useLabel?AppLocalizations.of(context).translate(widget.title,defaultText: widget.title):null,
           suffixIcon:widget.suffixIcon,
         ),
       ),

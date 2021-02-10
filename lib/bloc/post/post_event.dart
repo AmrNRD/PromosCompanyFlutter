@@ -5,6 +5,14 @@ abstract class PostEvent {}
 
 class GetAllPastsEvent extends PostEvent {}
 
+class AddPostEvent extends PostEvent {
+  final String post;
+  AddPostEvent(this.post);
+}
+class DeletePostEvent extends PostEvent {
+  final Post post;
+  DeletePostEvent(this.post);
+}
 class LikeOrDislikePostEvent extends PostEvent {
   final Post post;
   LikeOrDislikePostEvent(this.post);

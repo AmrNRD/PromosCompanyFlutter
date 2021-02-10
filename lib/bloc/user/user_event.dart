@@ -60,7 +60,9 @@ class SignUpUser extends UserEvent {
   final String passwordConfirmation;
   final String platform;
   final String firebaseToken;
-  SignUpUser({@required this.email, @required this.name, @required this.mobile, @required this.city, @required this.gender, @required this.lat, @required this.long, @required this.avatar, @required this.password, @required this.passwordConfirmation, @required this.platform,this.firebaseToken});
+  final String photoName;
+  final String address;
+  SignUpUser({@required this.email, @required this.name, @required this.mobile, @required this.city, @required this.gender, @required this.lat, @required this.long, this.avatar, @required this.password, @required this.passwordConfirmation, @required this.platform,this.firebaseToken,this.photoName,this.address });
 
 }
 

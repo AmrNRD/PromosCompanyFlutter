@@ -41,69 +41,90 @@ class PostCardComponent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                height: 56,
-                width: 56,
-                margin: EdgeInsetsDirectional.only(end: 16),
-                padding: EdgeInsets.all(1),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 5,
-                      color: Colors.black.withOpacity(0.2),
-                    ),
-                  ],
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.white,
-                  ),
-                ),
-                child: InkWell(
-                  onTap: insideTheProfile?null:()=>Navigator.of(context).pushNamed(Env.profilePage,arguments: post.user),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    child: ImageProcessor.image(
-                      url: post.user.image,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
               Expanded(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: insideTheProfile?null:()=>Navigator.of(context).pushNamed(Env.profilePage,arguments: post.user),
-                            child: Container(
-                              margin: EdgeInsets.only(bottom: 8),
-                              child: Text(
-                                post.user.name,
-                                style: Theme.of(context).textTheme.headline4.copyWith(fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(bottom: 24),
-                            child: Text(
-                                post.lastUpdate!=null?DateFormat('h:mm a dd-MM-yyyy',Root.locale.toString()).format(post.lastUpdate):"",
-                              style: Theme.of(context).textTheme.bodyText1.copyWith(fontWeight: FontWeight.w400),
-                            ),
+                    Container(
+                      height: 56,
+                      width: 56,
+                      margin: EdgeInsetsDirectional.only(end: 16),
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(1, 1),
+                            blurRadius: 5,
+                            color: Colors.black.withOpacity(0.2),
                           ),
                         ],
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        child: ImageProcessor.image(
+                          url: post.user.image,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 8),
+                                  child: Text(
+                                    post.user.name,
+                                    style: Theme.of(context).textTheme.headline4.copyWith(fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 24),
+                                  child: Text(
+                                      post.lastUpdate!=null?DateFormat('h:mm a dd-MM-yyyy',Root.locale.toString()).format(post.lastUpdate):"",
+                                    style: Theme.of(context).textTheme.bodyText1.copyWith(fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
 
+                        ],
+                      ),
+                    )
                   ],
+                ),
+              ),
+              Flexible(
+                child: PopupMenuButton(
+                  elevation: 3.2,
+                  onCanceled: () {
+                  },
+                  tooltip: 'This is tooltip',
+                  onSelected: (value){
+                    if(value=="delete")
+                      BlocProvider.of<PostBloc>(context).add(DeletePostEvent(post));
+                  },
+                  child: Icon(FontAwesomeIcons.angleDown),
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                      value: "delete",
+                      child: Text(AppLocalizations.of(context).translate("delete",defaultText: "delete"),style: Theme.of(context).textTheme.bodyText1,),
+                    )];
+                  },
                 ),
               )
             ],
@@ -172,5 +193,6 @@ class PostCardComponent extends StatelessWidget {
       ),
     );
   }
+
 
 }

@@ -73,6 +73,5 @@ class User {
     'lat':lat,
     'long':long,
     'about_me':aboutMe
-
   };
 }

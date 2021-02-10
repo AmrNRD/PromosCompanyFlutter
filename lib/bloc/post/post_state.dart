@@ -11,6 +11,7 @@ class PostLoaded extends PostState {
   final Post post;
   PostLoaded(this.post);
 }
+class PostDeleted extends PostState {}
 
 class PostsLoaded extends PostState {
   final List<Post>posts;
