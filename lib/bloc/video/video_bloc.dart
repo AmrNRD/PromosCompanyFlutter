@@ -23,6 +23,12 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
       }else if (event is GetAllMyVideos) {
         List<AdVideo> adVideos=await videoRepository.getAllAdVideo();
         yield VideosLoaded(adVideos);
+      }else if (event is DisableAdVideoEvent) {
+        AdVideo adVideo=await videoRepository.disable(event.adVideo);
+        yield VideoLoaded(adVideo);
+      }else if (event is EnableAdVideoEvent) {
+        AdVideo adVideo=await videoRepository.enable(event.adVideo);
+        yield VideoLoaded(adVideo);
       }
     } catch (error) {
       yield VideoError(error.toString());

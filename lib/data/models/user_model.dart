@@ -57,6 +57,8 @@ class User {
     'email': email,
     'image': image,
     'points':points,
+    'mobile':mobile,
+    'city':city,
     'address':address,
     'lat':lat,
     'long':long,
@@ -66,12 +68,9 @@ class User {
 
   Map<String, dynamic> toUpdateJson() => {
     'name': name,
-    'email': email,
-    'image': image,
-    'points':points,
     'address':address,
-    'lat':lat,
-    'long':long,
+    'city':city,
+    'mobile':mobile,
     'about_me':aboutMe
   };
 }

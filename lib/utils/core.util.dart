@@ -153,7 +153,7 @@ class ImageProcessor {
   }) {
     return Container(
       child: ClipRRect(
-          borderRadius: BorderRadius.circular(100.0),
+          borderRadius: BorderRadius.circular(20.0),
           child: CachedNetworkImage(
             imageUrl: path ?? Env.dummyProfilePic,
             fit: BoxFit.cover,

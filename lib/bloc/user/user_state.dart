@@ -21,8 +21,8 @@ class UserLoaded extends UserState {
    UserLoaded(this.user);
 }
 class UserProfilePictureLoaded extends UserState {
-  UserProfilePictureLoaded();
-
+  final User user;
+  UserProfilePictureLoaded(this.user);
 }
 class UserSignedUp extends UserState {
   final User user;

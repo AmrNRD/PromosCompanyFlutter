@@ -39,8 +39,6 @@ class _LandingSplashScreenState extends State<LandingSplashScreen> {
       body: BlocListener<UserBloc, UserState>(
         listener: (BuildContext context, UserState state) async {
           if (state is UserLoaded) {
-            print("Here");
-            print(state.user.toJson());
             setState(() {
               Root.user=state.user;
             });
@@ -51,10 +49,13 @@ class _LandingSplashScreenState extends State<LandingSplashScreen> {
             child: Shimmer.fromColors(
               baseColor: AppColors.primaryColor,
               highlightColor: AppColors.white,
-              child: Image.asset(
-                "assets/images/logo.png",
-                height: screenAwareSize(200, context),
-                width: screenAwareSize(200, context),
+              child: Hero(
+                tag: "Logo",
+                child: Image.asset(
+                  "assets/images/logo.png",
+                  height: screenAwareSize(200, context),
+                  width: screenAwareSize(200, context),
+                ),
               ),
             )),
       ),

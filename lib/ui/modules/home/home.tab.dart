@@ -3,18 +3,22 @@ import 'dart:async';
 import 'package:PromoMeCompany/bloc/post/post_bloc.dart';
 import 'package:PromoMeCompany/data/models/post_model.dart';
 import 'package:PromoMeCompany/ui/common/comments_sheets.dart';
+import 'package:PromoMeCompany/ui/common/custom_appbar.dart';
 import 'package:PromoMeCompany/ui/common/genearic.state.component.dart';
 import 'package:PromoMeCompany/ui/common/post.card.component.dart';
 import 'package:PromoMeCompany/ui/common/write_post_sheets.dart';
 import 'package:PromoMeCompany/ui/common/write_something_widget.dart';
 import 'package:PromoMeCompany/ui/modules/navigation/home.navigation.dart';
+import 'package:PromoMeCompany/ui/style/app.colors.dart';
 import 'package:PromoMeCompany/utils/app.localization.dart';
 import 'package:PromoMeCompany/utils/core.util.dart';
 import 'package:PromoMeCompany/utils/delayed_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_indicator_view/loading_indicator_view.dart';
+import 'package:shimmer/shimmer.dart';
 
 
 class HomeTabPage extends StatefulWidget {
@@ -28,7 +32,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
 
   List<Post>posts=[];
   Post selectedPost;
-  bool isLoading=false;
+  bool isLoading=true;
   bool isError=false;
   String errorMessage="";
   PersistentBottomSheetController _controller;
@@ -45,15 +49,34 @@ class _HomeTabPageState extends State<HomeTabPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      appBar:  CustomAppBar(
+        actionButtons: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+            child: RaisedButton(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                color: Color(0xFFF0483D),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(FontAwesomeIcons.plus),
+                    SizedBox(width: 2),
+                    Text(
+                      AppLocalizations.of(context).translate("add"),
+                      style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+                onPressed: onWriteClickClick
+            ),
+          ),
+        ],
+      ),
       backgroundColor: Theme.of(context).backgroundColor,
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
-                alignment: AlignmentDirectional.centerStart,
-                margin: EdgeInsets.symmetric(horizontal: 30,vertical: 30),
-                child: Text(AppLocalizations.of(context).translate("home"),style: Theme.of(context).textTheme.headline1),
-              ),
+              SizedBox(height: 10),
               GestureDetector(onTap:onWriteClickClick,child: WriteSomethingWidget()),
               Container(
                 margin: EdgeInsetsDirectional.only(top: 10),
@@ -96,7 +119,16 @@ class _HomeTabPageState extends State<HomeTabPage> {
                       ? Container(
                           margin: EdgeInsets.all(30),
                           alignment: Alignment.center,
-                          child: SemiCircleSpinIndicator(color: Theme.of(context).accentColor))
+                          child: Shimmer.fromColors(
+                            baseColor: AppColors.primaryColor,
+                            highlightColor: AppColors.white,
+                            child: Image.asset(
+                              "assets/images/logo2.png",
+                              height: screenAwareSize(70, context),
+                              width: screenAwareWidth(70, context),
+                            ),
+                          ),
+                        )
                       : isError ? Container(
                               alignment: Alignment.center,
                               child: GenericState(
@@ -129,7 +161,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
                                       },
                                     ),
                                   ),
-                                  delay: 150 * index,
+                                  delay: 50 * index,
                                 );
                               },
                             ):Container(

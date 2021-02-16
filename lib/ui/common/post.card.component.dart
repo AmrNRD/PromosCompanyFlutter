@@ -52,22 +52,8 @@ class PostCardComponent extends StatelessWidget {
                       width: 56,
                       margin: EdgeInsetsDirectional.only(end: 16),
                       padding: EdgeInsets.all(1),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(1, 1),
-                            blurRadius: 5,
-                            color: Colors.black.withOpacity(0.2),
-                          ),
-                        ],
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.white,
-                        ),
-                      ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
                         child: ImageProcessor.image(
                           url: post.user.image,
                           fit: BoxFit.cover,
@@ -112,7 +98,7 @@ class PostCardComponent extends StatelessWidget {
                   elevation: 3.2,
                   onCanceled: () {
                   },
-                  tooltip: 'This is tooltip',
+                  tooltip: 'options',
                   onSelected: (value){
                     if(value=="delete")
                       BlocProvider.of<PostBloc>(context).add(DeletePostEvent(post));

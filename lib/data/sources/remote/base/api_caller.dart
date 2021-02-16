@@ -81,7 +81,7 @@ class APICaller {
     return dataRetrived;
   }
 
-  static Future<dynamic> multiPartData(String requestType,String urlExtension, List<File> files,{Map body, bool authorizedHeader = false,outerAPI=false,bool isVideo=false}) async {
+  static Future<dynamic> multiPartData(String requestType,String urlExtension, List<File> files,{Map body, bool authorizedHeader = false,outerAPI=false,bool isVideo=false,String type='video'}) async {
     Map<String, String> headers;
     if (authorizedHeader) {
       final prefs = await SharedPreferences.getInstance();
@@ -104,17 +104,16 @@ class APICaller {
       request.fields[key]=value.toString();
     });
     headers.forEach((key, value) {
-      request.headers[key]=value.toString();
+      request.headers[key]=value;
     });
-    for(File file in files)
+    for(int i=0;i<files.length;i++)
     {
-
       request.files.add(
           http.MultipartFile(
-              'video',
-              file.readAsBytes().asStream(),
-              file.lengthSync(),
-              filename: file.path.split("/").last,
+              type+"["+i.toString()+"]",
+              files[i].readAsBytes().asStream(),
+              files[i].lengthSync(),
+              filename: files[i].path.split("/").last,
           )
       );
     }
@@ -212,7 +211,8 @@ class APICaller {
       case 409:
       case 422:
         Map responseBody = json.decode(response.body);
-        throw BadRequestException("Internal server error, please try again later.",errors: responseBody['errors']);
+
+        throw BadRequestException(responseBody['message'],errors: responseBody['errors'] is Map?responseBody['errors'] :null);
         break;
       case 500:
         debugPrint("Server error: "+response.body);

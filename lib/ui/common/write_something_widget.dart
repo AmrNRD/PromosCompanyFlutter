@@ -27,18 +27,18 @@ class WriteSomethingWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                UserCircularPhoto(photo: Root.user.image,size: 50),
+                UserCircularPhoto(photo: Root.user.image,size: 56),
                 SizedBox(width: 7.0),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   height: 70.0,
-                  width: MediaQuery.of(context).size.width/1.4,
+                  width: MediaQuery.of(context).size.width/1.45,
                   decoration: BoxDecoration(
                     border: Border.all(
                       width: 1.0,
                       color: Colors.grey[400]
                     ),
-                    borderRadius: BorderRadius.circular(30.0)
+                    borderRadius: BorderRadius.circular(20.0)
                   ),
                   child: Center(child: Text(AppLocalizations.of(context).translate('Write something here...'))),
                 )

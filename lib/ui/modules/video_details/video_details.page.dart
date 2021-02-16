@@ -1,134 +1,139 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:PromoMeCompany/bloc/post/post_bloc.dart';
+import 'package:PromoMeCompany/bloc/store/store_bloc.dart';
+import 'package:PromoMeCompany/bloc/video/video_bloc.dart';
+import 'package:PromoMeCompany/bloc/video/video_bloc.dart';
+import 'package:PromoMeCompany/bloc/video/video_bloc.dart';
+import 'package:PromoMeCompany/bloc/video/video_bloc.dart';
+import 'package:PromoMeCompany/bloc/video/video_bloc.dart';
+import 'package:PromoMeCompany/data/models/ad_video.dart';
 import 'package:PromoMeCompany/data/models/sale_item.dart';
+import 'package:PromoMeCompany/data/repositories/store_repository.dart';
+import 'package:PromoMeCompany/data/repositories/video_repository.dart';
+import 'package:PromoMeCompany/ui/modules/sidemenu/components/side.menu.button.dart';
+import 'package:PromoMeCompany/ui/style/theme.dart';
 import 'package:PromoMeCompany/utils/app.localization.dart';
 import 'package:PromoMeCompany/utils/dots_indicator.dart';
 import 'package:PromoMeCompany/utils/sizeConfig.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../env.dart';
 
-class SaleItemDetailsPage extends StatefulWidget {
-  final SaleItem saleItem;
-  const SaleItemDetailsPage({Key key,@required this.saleItem}) : super(key: key);
+class VideoDetailsPage extends StatefulWidget {
+  final AdVideo video;
+  const VideoDetailsPage({Key key,@required this.video}) : super(key: key);
 
   @override
-  _SaleItemDetailsPageState createState() => _SaleItemDetailsPageState();
+  _VideoDetailsPageState createState() => _VideoDetailsPageState();
 }
 
-class _SaleItemDetailsPageState extends State<SaleItemDetailsPage> {
+class _VideoDetailsPageState extends State<VideoDetailsPage> {
 
   bool allowBlocStateUpdates = false;
   void allowBlocUpdates(bool allow) => setState(() => allowBlocStateUpdates = allow);
-
+  VideoBloc storeBloc;
+  AdVideo video;
+  @override
+  void initState() {
+    super.initState();
+    video=widget.video;
+    storeBloc=new VideoBloc(new VideoDataRepository());
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body:
-        Listener(
-          onPointerMove: (details) => allowBlocUpdates(true),
-          onPointerUp: (details) => allowBlocUpdates(true),
-
-          /// false
-          child: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                DetailsHeader(
-                  allowBlocStateUpdates: allowBlocStateUpdates,
-                  innerBoxIsScrolled: innerBoxIsScrolled,
-                  saleItem: widget.saleItem,
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: DetailsHeaderHolder(
-                    child: Container(),
-                  ),
-                ),
-              ];
-            },
-            body: Container(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.screenHeight,
-              color: Theme.of(context).cardColor,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Container(
-                  color: Theme.of(context).cardColor,
-                  margin: EdgeInsetsDirectional.only(top: 0.120 * SizeConfig.screenWidth + 4.50 * SizeConfig.widthMultiplier),
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 30),
-                      Text(
-                        AppLocalizations.of(context).translate("currency", replacement: widget.saleItem.price.toString()),
-                        softWrap: true,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.grey),
+    return WillPopScope(
+      onWillPop: () => onPop(),
+      child: Scaffold(
+          body: BlocProvider<VideoBloc>(
+            create: (context)=>storeBloc,
+            child: BlocListener<VideoBloc,VideoState>(
+              listener: (context,state){
+                if(state is VideoLoaded){
+                  setState(() {
+                    video=state.video;
+                  });
+                }
+              },
+              child: Listener(
+                onPointerMove: (details) => allowBlocUpdates(true),
+                onPointerUp: (details) => allowBlocUpdates(true),
+                child: NestedScrollView(
+                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                    return <Widget>[
+                      DetailsHeader(
+                        allowBlocStateUpdates: allowBlocStateUpdates,
+                        innerBoxIsScrolled: innerBoxIsScrolled,
+                        video: video,
+                        bloc: storeBloc,
                       ),
-                      SizedBox(height: 12),
-                      Text(
-                        widget.saleItem.title,
-                        style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 24),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: DetailsHeaderHolder(
+                          child: Container()
+                        ),
                       ),
-                      SizedBox(height: 8),
-                      widget.saleItem.user?.address!=null?Row(
-                        children: [
-                          SizedBox(height: 12, width: 12, child: SvgPicture.asset('assets/icons/location_icon.svg')),
-                          SizedBox(width: 7),
-                          Expanded(
-                            child: Text(
-                              widget.saleItem.user?.address??"",
-                              softWrap: true,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.headline4.copyWith(color: Colors.grey),
+                    ];
+                  },
+                  body: Container(
+                    width: SizeConfig.screenWidth,
+                    height: SizeConfig.screenHeight,
+                    color: Theme.of(context).cardColor,
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Container(
+                        color: Theme.of(context).cardColor,
+                        margin: EdgeInsetsDirectional.only(top: 0.120 * SizeConfig.screenWidth + 4.50 * SizeConfig.widthMultiplier),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 40),
+                            Text(
+                              video.name,
+                              style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 24),
                             ),
-                          ),
-                        ],
-                      ):Container(),
-                      SizedBox(height: 20),
-                      Divider(
-                        height: 2,
-                        color: Colors.grey,
+                            SideMenuButton(icon:"assets/icons/share_icon.svg",title: "targeted_views",subTitle: "",onTap: null,replacement: video.targetViews.toString()),
+                            Divider(thickness: 1),
+                            SideMenuButton(icon:"assets/icons/profile_icon.svg",title: "number_of_views",subTitle: "",onTap: null,replacement: video.numberOfViews.toString()),
+                            Divider(thickness: 1),
+                            video?.cities!=null&&video.cities.length>0?SideMenuButton(icon:"assets/icons/lang_icon.svg",title: video.cities.join(" , "),subTitle: "",onTap: null):Container(),
+                            video?.cities!=null&&video.cities.length>0?Divider(thickness: 1):Container(),
+                            video?.genders!=null&&video.genders.length>0?SideMenuButton(icon:"assets/icons/profile_icon.svg",title: video.genders.join(" , "),subTitle: "",onTap: null):Container(),
+                            video?.genders!=null&&video.genders.length>0?Divider(thickness: 1):Container(),
+                            SideMenuButton(icon:"assets/icons/lang_icon.svg",title: Text(AppLocalizations.of(context).translate(video.status), softWrap: true, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headline2.copyWith(color:AppTheme.activeColor(video.status)),),subTitle: "",onTap: null,),
+
+                          ],
+                        ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        AppLocalizations.of(context).translate("description"),
-                        style: Theme.of(context).textTheme.headline2,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        widget.saleItem?.description??"",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
+                    ),
                   ),
+
+                  // ************************** ************************** ************************** **************************
                 ),
               ),
             ),
+          )
 
-            // ************************** ************************** ************************** **************************
+        /*PropertyDetailsAppBar(
+          body: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: PropertyOverViewComponent(),
           ),
-        )
-
-      /*PropertyDetailsAppBar(
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: PropertyOverViewComponent(),
-        ),
-      ),*/
+        ),*/
+      ),
     );
   }
 
+  onPop() async{
+     Navigator.of(context).pop(video);
+  }
 
 }
 
@@ -137,7 +142,7 @@ class DetailsHeaderHolder extends SliverPersistentHeaderDelegate {
   final Widget child;
 
   const DetailsHeaderHolder({
-    this.child,
+    this.child
   });
 
   @override
@@ -159,12 +164,14 @@ class DetailsHeaderHolder extends SliverPersistentHeaderDelegate {
 class DetailsHeader extends StatefulWidget {
   final bool allowBlocStateUpdates;
   final bool innerBoxIsScrolled;
-  final SaleItem saleItem;
+  final AdVideo video;
+  final VideoBloc bloc;
   const DetailsHeader({
     Key key,
     this.allowBlocStateUpdates,
     this.innerBoxIsScrolled,
-    @required this.saleItem,
+    this.bloc,
+    @required this.video,
   }) : super(key: key);
 
   @override
@@ -174,10 +181,19 @@ class DetailsHeader extends StatefulWidget {
 class _FlexibleHeaderState extends State<DetailsHeader> {
   FlexibleHeaderBloc bloc;
   final _pageViewController = new PageController();
+  bool play=false;
 
+  VideoPlayerController _controller;
+  bool didInit=false;
   @override
   void initState() {
     bloc = FlexibleHeaderBloc();
+    _controller = VideoPlayerController.network(widget.video.link)
+      ..initialize().then((_) {
+        setState(() {
+          didInit=true;
+        });
+      });
 
     super.initState();
   }
@@ -185,7 +201,7 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
   @override
   void dispose() {
     bloc.dispose();
-
+    _controller.dispose();
     super.dispose();
   }
 
@@ -215,19 +231,31 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
               ),
             ),
             actions: [
-              Container(
-                padding: EdgeInsets.all(8),
-                child: SvgPicture.asset(
-                  "assets/icons/share_icon.svg",
-                  color: Colors.white,
-                  height: 16,
-                  width: 16,
+              widget.video.status!="done"?Container(
+                padding: EdgeInsets.all(20),
+                child: PopupMenuButton(
+                  elevation: 3.2,
+                  onCanceled: () {
+                  },
+                  tooltip: 'details',
+                  onSelected: (value){
+                    if(value=="disable")
+                      widget.bloc.add(widget.video.status=="active"?DisableAdVideoEvent(widget.video):EnableAdVideoEvent(widget.video));
+                  },
+                  child: Icon(FontAwesomeIcons.ellipsisV),
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        value: "disable",
+                        child: Text(widget.video.status=="active"?AppLocalizations.of(context).translate("disable",defaultText: "disable"):AppLocalizations.of(context).translate("enable"),style: Theme.of(context).textTheme.bodyText1,),
+                      )];
+                  },
                 ),
-              )
+              ):Container()
             ],
             leading: InkWell(
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context,widget.video);
                 },
                 child: Icon(Icons.arrow_back)),
             flexibleSpace: LayoutBuilder(
@@ -247,33 +275,9 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
                         background:  Container(
                           color: Theme.of(context).cardColor,
                           padding: EdgeInsetsDirectional.only(bottom: 25),
-                          child: Stack(
-                            children: [
-                              PageView.builder(
-                                pageSnapping: true,
-                                controller: _pageViewController,
-                                itemCount: widget.saleItem.images.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return CachedNetworkImage(
-                                    imageUrl:widget.saleItem.images[index],
-                                    fit: BoxFit.cover,
-                                    errorWidget: (context, url, error) => CachedNetworkImage(imageUrl: Env.dummyProfilePic),
-                                  );
-                                },
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: ScrollingPageIndicator(
-                                  dotColor: Colors.white.withOpacity(0.6),
-                                  dotSize: 7,
-                                  dotSelectedSize: 12,
-                                  dotSpacing: 12,
-                                  controller: _pageViewController,
-                                  itemCount: widget.saleItem.images.length,
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: InkWell(onTap:(){
+                            _controller.value.isPlaying? _controller.pause(): _controller.play();
+                            },child: VideoPlayer(_controller)),
                         ),
                       ),
 
@@ -286,14 +290,13 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
                             end: 2.5 * SizeConfig.widthMultiplier,
                           ),
                           child: Opacity(
-                            opacity: state.opacityFlexible < 0.05
-                                ? 0.0
-                                : state.opacityFlexible,
+                            opacity: state.opacityFlexible < 0.05 ? 0.0 : state.opacityFlexible,
                             child: Row(
                               children: [
                                 Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
                                           blurRadius: 20,
@@ -304,13 +307,15 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
                                     ),
                                     height: 90,
                                     width: 90,
-                                    padding: EdgeInsets.all(14),
-                                    child:  CachedNetworkImage(
-                                      imageUrl: widget.saleItem.user.image??Env.dummyProfilePic,
-                                      fit: BoxFit.fill,
-                                      height: 90,
-                                      width: 90,
-                                      errorWidget: (context, url, error) => CachedNetworkImage(imageUrl: Env.dummyProfilePic),
+                                    child:  ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: CachedNetworkImage(
+                                        imageUrl: widget.video.user.image??Env.dummyProfilePic,
+                                        fit: BoxFit.fill,
+                                        height: 90,
+                                        width: 90,
+                                        errorWidget: (context, url, error) => CachedNetworkImage(imageUrl: Env.dummyProfilePic),
+                                      ),
                                     )
                                 )
                               ],

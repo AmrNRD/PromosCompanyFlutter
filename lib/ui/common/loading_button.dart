@@ -1,6 +1,8 @@
 import 'package:PromoMeCompany/ui/style/app.colors.dart';
+import 'package:PromoMeCompany/utils/app.localization.dart';
 import 'package:PromoMeCompany/utils/core.util.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 
 class LoadingButton extends StatefulWidget {
@@ -34,7 +36,7 @@ class _LoadingButtonState extends State<LoadingButton>  with TickerProviderState
           child: Container(
             width: widget.status!=0?screenAwareSize(42, context):screenAwareWidth(262, context),
             height:screenAwareSize(42, context),
-            child: setUpButtonChild(),
+            child: setUpButtonChild(widget.status),
           ),
           onPressed: widget.status!=0 ? null :() {
             widget.onPressed();
@@ -49,17 +51,23 @@ class _LoadingButtonState extends State<LoadingButton>  with TickerProviderState
 
     );
   }
-  Widget setUpButtonChild() {
-    if (widget.status==0) {
+  Widget setUpButtonChild(int status) {
+    if (status==0) {
       return Center(
         child: Text(
-          widget.title,
+          AppLocalizations.of(context).translate(widget.title),
           style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.white),
         ),
       );
     } else if (widget.status==1) {
-      return CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      return Shimmer.fromColors(
+        baseColor: AppColors.primaryColor,
+        highlightColor: AppColors.white,
+        child: Image.asset(
+          "assets/images/logo2.png",
+          height: screenAwareSize(70, context),
+          width: screenAwareWidth(70, context),
+        ),
       );
     } else {
 //      _animationController.forward();

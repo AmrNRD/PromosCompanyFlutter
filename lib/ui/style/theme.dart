@@ -90,20 +90,14 @@ AppTheme(String fontFamily){
     subtitle2: smallText.copyWith(color: AppColors.customGreyLevels[100]),
   );
 
-  static Color attendanceColor(String status){
+  static Color activeColor(String status){
     switch(status){
-      case "pending":
-        return AppColors.primaryColor;
-      case "checked_in":
-      case "checked_out":
-        return AppColors.successColor;
-      case "missed":
-        return AppColors.simpleWarningColor;
-      case "work_hours_not_completed":
-        return AppColors.warningColor;
-      case "not_accepted":
-      case "absented":
+      case "in-active":
         return AppColors.failedColor;
+      case "active":
+        return AppColors.darkCanvasColor;
+      case "done":
+        return AppColors.successColor;
       default:
         return AppColors.failedColor;
     }

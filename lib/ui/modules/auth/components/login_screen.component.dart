@@ -5,6 +5,7 @@ import 'package:PromoMeCompany/bloc/user/user_bloc.dart';
 import 'package:PromoMeCompany/main.dart';
 import 'package:PromoMeCompany/ui/common/custom_raised_button.dart';
 import 'package:PromoMeCompany/ui/common/form.input.dart';
+import 'package:PromoMeCompany/ui/common/loading_button.dart';
 import 'package:PromoMeCompany/utils/validators.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
 
-  FocusNode _emailFocusNode;
-  FocusNode _passwordFocusNode;
+  FocusNode _emailFocusNode=new FocusNode();
+  FocusNode _passwordFocusNode=new FocusNode();
 
   int reqStatus=0;
 
@@ -80,56 +81,67 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (state is UserError) {
           setState(() {reqStatus = 0;});
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(state.message, style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.white),),
+            content: Text(AppLocalizations.of(context).translate(state.message,defaultText: state.message), style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.white),),
             backgroundColor: AppColors.accentColor1,
           ));
         }
       },
       child: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimens.marginEdgeCase24),
-          margin: EdgeInsets.only(top: AppDimens.paddingEdgeCase40),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 138),
-                  child: Hero(tag: "Logo", child: Image.asset("assets/images/logo.png",height: screenAwareSize(100, context),width: screenAwareWidth(100, context))),
-                ),
-
-                SizedBox(height: AppDimens.marginDefault12),
-
-                Text(AppLocalizations.of(context).translate("welcome"), style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 25, fontWeight: FontWeight.bold)),
-
-
-                SizedBox(height: AppDimens.marginEdgeCase24),
-
-                //email
-                FormInputField(title: "email", focusNode: _emailFocusNode, onSave: (value) => _authData['email'] = value,validator:(value)=>Validator(context).isEmail(value) ,nextFocusNode: _passwordFocusNode),
-
-                //password
-                FormInputField(
-                  title: "password",
-                  focusNode: _passwordFocusNode,
-                  onSave: (value) => _authData['password'] = value,
-                  isRequired: true,
-                  obscureText: _obscureTextLogin,
-                  suffixIcon: GestureDetector(
-                    onTap: () => setState(() {_obscureTextLogin = !_obscureTextLogin;}),
-                    child: Icon(_obscureTextLogin ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye, size: 15.0, color: Colors.grey)
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Center(
+                child: Hero(tag: "Logo", child: Image.asset("assets/images/logo.png",height: screenAwareSize(100, context),width: screenAwareWidth(100, context)))
+            ),
+            SizedBox(height: 130),
+            Container(
+                margin: EdgeInsetsDirectional.only(start: 15),
+                child: Text(AppLocalizations.of(context).translate("welcome"), style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 25, fontWeight: FontWeight.bold))),
+            SizedBox(height: AppDimens.marginEdgeCase24),
+            Card(
+              color: Theme.of(context).cardColor,
+              elevation: 1,
+              margin: EdgeInsets.all(15),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal:10),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      SizedBox(height: 20),
+                      //email
+                      FormInputField(title: "email", focusNode: _emailFocusNode, onSave: (value) => _authData['email'] = value,validator:(value)=>Validator(context).isEmail(value) ,nextFocusNode: _passwordFocusNode,outterBorder: true, useLabel: true),
+                      //password
+                      FormInputField(
+                        title: "password",
+                        focusNode: _passwordFocusNode,
+                        onSave: (value) => _authData['password'] = value,
+                        isRequired: true,
+                        onFieldSubmitted: onLogin,
+                        obscureText: _obscureTextLogin,
+                        suffixIcon: GestureDetector(
+                          onTap: () => setState(() {_obscureTextLogin = !_obscureTextLogin;}),
+                          child: Icon(_obscureTextLogin ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye, size: 15.0, color: Colors.grey)
+                        ),
+                        outterBorder: true,
+                        useLabel: true
+                      ),
+                      SizedBox(height: AppDimens.marginEdgeCase32),
+                      Center(child: LoadingButton(title: "sign_in", onPressed: onLogin, status: reqStatus)),
+                      SizedBox(height: 20),
+                    ],
                   ),
                 ),
-                SizedBox(height: AppDimens.marginEdgeCase32),
-                Center(child: CustomRaisedButton(label: AppLocalizations.of(context).translate("sign_in"), onPress: onLogin, isLoading: reqStatus == 1)),
-                Center(child: FlatButton(onPressed: widget.goToForgotPassword, child: Text(AppLocalizations.of(context).translate("forget"), style: Theme.of(context).textTheme.subtitle1))),
-                SizedBox(height: AppDimens.marginEdgeCase32),
-                Center(child: FlatButton(onPressed: widget.goToRegistration, child: Text(AppLocalizations.of(context).translate("don't have account"), style: Theme.of(context).textTheme.subtitle1))),
-              ],
+              ),
             ),
-          ),
+            Center(child: FlatButton(onPressed: widget.goToForgotPassword, child: Text(AppLocalizations.of(context).translate("forget"), style: Theme.of(context).textTheme.subtitle1))),
+            SizedBox(height: AppDimens.marginEdgeCase32),
+            Center(child: FlatButton(onPressed: widget.goToRegistration, child: Text(AppLocalizations.of(context).translate("don't have account"), style: Theme.of(context).textTheme.subtitle1))),
+          ],
         ),
       ),
     );

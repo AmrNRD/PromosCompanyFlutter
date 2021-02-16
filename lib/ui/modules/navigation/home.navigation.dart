@@ -6,6 +6,7 @@ import 'package:PromoMeCompany/ui/modules/home/home.tab.dart';
 import 'package:PromoMeCompany/ui/modules/profile/profile.page.dart';
 import 'package:PromoMeCompany/ui/modules/store/store.tab.dart';
 import 'package:PromoMeCompany/ui/style/app.colors.dart';
+import 'package:PromoMeCompany/utils/app.localization.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -42,7 +43,6 @@ class _HomeNavigationPageState extends State<HomeNavigationPage> with TickerProv
     HomeTabPage(),
     StoreTab(),
     VideosTab(),
-    ProfileTab(),
   ];
   int _currentSelectedTab = 0;
 
@@ -58,74 +58,42 @@ class _HomeNavigationPageState extends State<HomeNavigationPage> with TickerProv
   Widget build(BuildContext context) {
     return Scaffold(
       key: HomeNavigationPage.scaffoldKey,
-      body:SafeArea(
-        child: body[_currentSelectedTab],
-        right:false,
-        left: false,
-        bottom: false,
-      ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "addButton",
-        child: Icon(FontAwesomeIcons.plus),
-        backgroundColor: AppColors.accentColor1,
-        onPressed: onAddClick,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(25),topRight: Radius.circular(25)),
-        child:  BlocListener<UserBloc,UserState>(
-          listener: (context,state){
-            if(state is UserLoggedOut){
-              Navigator.pushReplacementNamed(context, Env.authPage);
-            }
-          },
-          child: AnimatedBottomNavigationBar(
-            icons:[FontAwesomeIcons.home,FontAwesomeIcons.shoppingBag,FontAwesomeIcons.film, FontAwesomeIcons.user],
-            activeColor: Colors.blue,
-            backgroundColor: Theme.of(context).cardColor,
-            inactiveColor: Theme.of(context).disabledColor,
-            gapLocation: GapLocation.center,
-            notchAndCornersAnimation:curve,
-            activeIndex: _currentSelectedTab,
-            onTap: _onItemTapped,
-            notchSmoothness: NotchSmoothness.verySmoothEdge,
-            leftCornerRadius: 10,
-          ),
+      body: BlocListener<UserBloc,UserState>(
+        listener: (context,state){
+          if(state is UserLoggedOut){
+            Navigator.pushReplacementNamed(context, Env.authPage);
+          }
+        },
+        child: SafeArea(
+          child: body[_currentSelectedTab],
+          right:false,
+          left: false,
+          bottom: false,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar:  BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(FontAwesomeIcons.home),
+            label:AppLocalizations.of(context).translate("home", defaultText: "Home"),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(FontAwesomeIcons.shoppingBag),
+            label: AppLocalizations.of(context).translate("sales", defaultText: "Sales"),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(FontAwesomeIcons.film),
+            label: AppLocalizations.of(context).translate("videos", defaultText: "Videos"),
+          ),
+        ],
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentSelectedTab,
+        selectedItemColor: AppColors.accentColor1,
+        backgroundColor: Theme.of(context).cardColor,
+        onTap: _onItemTapped,
+      ),
     );
   }
 
-  void onAddClick() {
-    switch(_currentSelectedTab){
-      case 0:
-        onWriteClickClick();
-        break;
-      case 2:
-        Navigator.pushNamed(context, Env.addVideoPage);
-    }
-  }
-
-  Future onWriteClickClick() async {
-    _controller2 = await HomeNavigationPage.scaffoldKey.currentState.showBottomSheet(
-          (builder) {
-        return StatefulBuilder(
-            builder: (context, setState) {
-              return SafeArea(
-                child: FractionallySizedBox(
-                  heightFactor: 0.45,
-                  child:  WritePostSheet(postInserted: postInserted,),
-                ),
-              );
-            });
-      },
-      backgroundColor: Colors.transparent,
-      elevation: 10,
-    );
-
-  }
-
-  postInserted() {
-    BlocProvider.of<PostBloc>(context).add(GetAllPastsEvent());
-  }
 }

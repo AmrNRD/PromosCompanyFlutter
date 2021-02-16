@@ -19,3 +19,12 @@ class StoreVideo extends VideoEvent {
 
   StoreVideo(this.adVideo, this.video);
 }
+
+class DisableAdVideoEvent extends VideoEvent {
+  final AdVideo adVideo;
+  DisableAdVideoEvent(this.adVideo);
+}
+class EnableAdVideoEvent extends VideoEvent {
+  final AdVideo adVideo;
+  EnableAdVideoEvent(this.adVideo);
+}

@@ -20,7 +20,7 @@ class _ProfileTabState extends State<ProfileTab> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ProfileTagComponent(user: Root.user,showPoints: false),
+              // ProfileTagComponent(user: Root.user,showPoints: false),
               Divider(thickness: 1),
               SettingsButtonComponent(),
             ],

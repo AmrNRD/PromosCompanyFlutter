@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 
 import 'user_model.dart';
@@ -15,11 +17,12 @@ class AdVideo {
   final User user;
   final int ageFrom;
   final int ageTo;
-  final String cities;
-  final String genders;
+  final List<String> cities;
+  final List<String> genders;
+  final String status;
 
 
-  AdVideo({@required this.id, @required this.name, @required this.startDate, @required this.endDate, @required this.targetViews, @required this.numberOfViews, @required this.video, @required this.user,@required this.link,this.ageFrom, this.ageTo,this.cities, this.genders});
+  AdVideo({@required this.id, @required this.name, @required this.startDate, @required this.endDate, @required this.targetViews, @required this.numberOfViews, @required this.video, @required this.user,@required this.link,this.ageFrom, this.ageTo,this.cities, this.genders,this.status});
 
 
   factory AdVideo.fromJson(Map<String, dynamic> data) {
@@ -30,6 +33,7 @@ class AdVideo {
       id: data['id'],
       name: data['name'],
       video: data['video'],
+      status: data['status'],
       user: User.fromJson(data['user']),
       startDate: DateTime.tryParse(data['start_date'].toString()),
       endDate: DateTime.tryParse(data['end_date'].toString()),
@@ -37,7 +41,9 @@ class AdVideo {
       numberOfViews: int.tryParse(data['number_of_views'].toString()),
       ageFrom: int.tryParse(data['age_from'].toString()),
       ageTo: int.tryParse(data['age_to'].toString()),
-      link:data['link']
+      link:data['link'],
+      cities:data['cities']!=null?List<String>.from((data['cities'] as List)):[],
+      genders:data['genders']!=null?List<String>.from((data['genders'] as List)):[],
     );
   }
 
@@ -46,8 +52,8 @@ class AdVideo {
     'target_views':targetViews,
     'link':link,
     // 'age_from':ageFrom,
-    'cities':cities,
-    'genders':genders,
+    'cities':jsonEncode(cities),
+    'genders':jsonEncode(genders),
     // 'age_to':ageTo
   };
 }

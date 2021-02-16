@@ -35,14 +35,10 @@ class SettingsButtonComponent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                AppLocalizations.of(context).translate(
-                  "dark_mode",
-                  defaultText: "Settings",
-                ),
+                AppLocalizations.of(context).translate("dark_mode", defaultText: "Settings"),
                 style: Theme.of(context).textTheme.headline4,
               ),
-              Switch(
-                  onChanged: (value){BlocProvider.of<SettingsBloc>(context).add(ChangeTheme(Theme.of(context).brightness==Brightness.dark?ThemeMode.light:ThemeMode.dark));},value: Theme.of(context).brightness==Brightness.dark),
+              Switch(onChanged: (value){BlocProvider.of<SettingsBloc>(context).add(ChangeTheme(Theme.of(context).brightness==Brightness.dark?ThemeMode.light:ThemeMode.dark));},value: Theme.of(context).brightness==Brightness.dark),
             ],
           ),
         ),

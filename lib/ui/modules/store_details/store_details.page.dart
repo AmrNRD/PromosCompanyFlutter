@@ -1,13 +1,20 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:PromoMeCompany/bloc/post/post_bloc.dart';
+import 'package:PromoMeCompany/bloc/store/store_bloc.dart';
 import 'package:PromoMeCompany/data/models/sale_item.dart';
+import 'package:PromoMeCompany/data/repositories/store_repository.dart';
+import 'package:PromoMeCompany/ui/modules/sidemenu/components/side.menu.button.dart';
+import 'package:PromoMeCompany/ui/style/theme.dart';
 import 'package:PromoMeCompany/utils/app.localization.dart';
 import 'package:PromoMeCompany/utils/dots_indicator.dart';
 import 'package:PromoMeCompany/utils/sizeConfig.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../env.dart';
 
@@ -23,112 +30,102 @@ class _SaleItemDetailsPageState extends State<SaleItemDetailsPage> {
 
   bool allowBlocStateUpdates = false;
   void allowBlocUpdates(bool allow) => setState(() => allowBlocStateUpdates = allow);
-
+  StoreBloc storeBloc;
+  SaleItem saleItem;
+  @override
+  void initState() {
+    super.initState();
+    saleItem=widget.saleItem;
+    storeBloc=new StoreBloc(new StoreDataRepository());
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body:
-        Listener(
-          onPointerMove: (details) => allowBlocUpdates(true),
-          onPointerUp: (details) => allowBlocUpdates(true),
-
-          /// false
-          child: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                DetailsHeader(
-                  allowBlocStateUpdates: allowBlocStateUpdates,
-                  innerBoxIsScrolled: innerBoxIsScrolled,
-                  saleItem: widget.saleItem,
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: DetailsHeaderHolder(
-                    child: Container(),
-                  ),
-                ),
-              ];
-            },
-            body: Container(
-              width: SizeConfig.screenWidth,
-              height: SizeConfig.screenHeight,
-              color: Theme.of(context).cardColor,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Container(
-                  color: Theme.of(context).cardColor,
-                  margin: EdgeInsetsDirectional.only(top: 0.120 * SizeConfig.screenWidth + 4.50 * SizeConfig.widthMultiplier),
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 30),
-                      Text(
-                        AppLocalizations.of(context).translate("currency", replacement: widget.saleItem.price.toString()),
-                        softWrap: true,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.headline2.copyWith(color: Colors.grey),
+    return WillPopScope(
+      onWillPop: () => onPop(),
+      child: Scaffold(
+          body: BlocProvider<StoreBloc>(
+            create: (context)=>storeBloc,
+            child: BlocListener<StoreBloc,StoreState>(
+              listener: (context,state){
+                if(state is SaleItemLoaded){
+                  setState(() {
+                    saleItem=state.saleItem;
+                  });
+                }
+              },
+              child: Listener(
+                onPointerMove: (details) => allowBlocUpdates(true),
+                onPointerUp: (details) => allowBlocUpdates(true),
+                child: NestedScrollView(
+                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                    return <Widget>[
+                      DetailsHeader(
+                        allowBlocStateUpdates: allowBlocStateUpdates,
+                        innerBoxIsScrolled: innerBoxIsScrolled,
+                        saleItem: saleItem,
+                        bloc: storeBloc,
                       ),
-                      SizedBox(height: 12),
-                      Text(
-                        widget.saleItem.title,
-                        style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 24),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: DetailsHeaderHolder(
+                          child: Container()
+                        ),
                       ),
-                      SizedBox(height: 8),
-                      widget.saleItem.user?.address!=null?Row(
-                        children: [
-                          SizedBox(height: 12, width: 12, child: SvgPicture.asset('assets/icons/location_icon.svg')),
-                          SizedBox(width: 7),
-                          Expanded(
-                            child: Text(
-                              widget.saleItem.user?.address??"",
-                              softWrap: true,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.headline4.copyWith(color: Colors.grey),
+                    ];
+                  },
+                  body: Container(
+                    width: SizeConfig.screenWidth,
+                    height: SizeConfig.screenHeight,
+                    color: Theme.of(context).cardColor,
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Container(
+                        color: Theme.of(context).cardColor,
+                        margin: EdgeInsetsDirectional.only(top: 0.120 * SizeConfig.screenWidth + 4.50 * SizeConfig.widthMultiplier),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 40),
+                            Text(
+                              saleItem.title,
+                              style: Theme.of(context).textTheme.headline2.copyWith(fontSize: 24),
                             ),
-                          ),
-                        ],
-                      ):Container(),
-                      SizedBox(height: 20),
-                      Divider(
-                        height: 2,
-                        color: Colors.grey,
+                            SideMenuButton(icon:"assets/icons/price_tag.svg",title: "currency",subTitle: "",onTap: null,replacement: saleItem.price.toString()),
+                            Divider(thickness: 1),
+                            saleItem?.cities!=null&&saleItem.cities.length>0?SideMenuButton(icon:"assets/icons/lang_icon.svg",title: saleItem.cities.join(" , "),subTitle: "",onTap: null):Container(),
+                            saleItem?.cities!=null&&saleItem.cities.length>0?Divider(thickness: 1):Container(),
+                            saleItem?.genders!=null&&saleItem.genders.length>0?SideMenuButton(icon:"assets/icons/profile_icon.svg",title: saleItem.genders.join(" , "),subTitle: "",onTap: null):Container(),
+                            saleItem?.genders!=null&&saleItem.genders.length>0?Divider(thickness: 1):Container(),
+                            SideMenuButton(icon:"assets/icons/lang_icon.svg",title: Text(AppLocalizations.of(context).translate(saleItem.status, replacement: saleItem.price.toString()), softWrap: true, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headline2.copyWith(color:AppTheme.activeColor(saleItem.status)),),subTitle: "",onTap: null,replacement: saleItem.price.toString()),
+                            Divider(thickness: 1),
+                            saleItem?.description!=null?SideMenuButton(icon:"assets/icons/category_icon.svg",title: saleItem.description,subTitle: "",onTap: null):Container(),
+
+                          ],
+                        ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        AppLocalizations.of(context).translate("description"),
-                        style: Theme.of(context).textTheme.headline2,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        widget.saleItem?.description??"",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      ),
-                    ],
+                    ),
                   ),
+
+                  // ************************** ************************** ************************** **************************
                 ),
               ),
             ),
+          )
 
-            // ************************** ************************** ************************** **************************
+        /*PropertyDetailsAppBar(
+          body: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: PropertyOverViewComponent(),
           ),
-        )
-
-      /*PropertyDetailsAppBar(
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: PropertyOverViewComponent(),
-        ),
-      ),*/
+        ),*/
+      ),
     );
   }
 
+  onPop() async{
+     Navigator.of(context).pop(saleItem);
+  }
 
 }
 
@@ -137,7 +134,7 @@ class DetailsHeaderHolder extends SliverPersistentHeaderDelegate {
   final Widget child;
 
   const DetailsHeaderHolder({
-    this.child,
+    this.child
   });
 
   @override
@@ -160,10 +157,12 @@ class DetailsHeader extends StatefulWidget {
   final bool allowBlocStateUpdates;
   final bool innerBoxIsScrolled;
   final SaleItem saleItem;
+  final StoreBloc bloc;
   const DetailsHeader({
     Key key,
     this.allowBlocStateUpdates,
     this.innerBoxIsScrolled,
+    this.bloc,
     @required this.saleItem,
   }) : super(key: key);
 
@@ -215,19 +214,31 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
               ),
             ),
             actions: [
-              Container(
-                padding: EdgeInsets.all(8),
-                child: SvgPicture.asset(
-                  "assets/icons/share_icon.svg",
-                  color: Colors.white,
-                  height: 16,
-                  width: 16,
+              widget.saleItem.status!="done"?Container(
+                padding: EdgeInsets.all(20),
+                child: PopupMenuButton(
+                  elevation: 3.2,
+                  onCanceled: () {
+                  },
+                  tooltip: 'details',
+                  onSelected: (value){
+                    if(value=="disable")
+                      widget.bloc.add(widget.saleItem.status=="active"?DisableSaleItemsEvent(widget.saleItem):EnableSaleItemsEvent(widget.saleItem));
+                  },
+                  child: Icon(FontAwesomeIcons.ellipsisV),
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        value: "disable",
+                        child: Text(widget.saleItem.status=="active"?AppLocalizations.of(context).translate("disable",defaultText: "disable"):AppLocalizations.of(context).translate("enable"),style: Theme.of(context).textTheme.bodyText1,),
+                      )];
+                  },
                 ),
-              )
+              ):Container()
             ],
             leading: InkWell(
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context,widget.saleItem);
                 },
                 child: Icon(Icons.arrow_back)),
             flexibleSpace: LayoutBuilder(
@@ -286,14 +297,13 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
                             end: 2.5 * SizeConfig.widthMultiplier,
                           ),
                           child: Opacity(
-                            opacity: state.opacityFlexible < 0.05
-                                ? 0.0
-                                : state.opacityFlexible,
+                            opacity: state.opacityFlexible < 0.05 ? 0.0 : state.opacityFlexible,
                             child: Row(
                               children: [
                                 Container(
                                     decoration: BoxDecoration(
                                       color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
                                           blurRadius: 20,
@@ -304,13 +314,15 @@ class _FlexibleHeaderState extends State<DetailsHeader> {
                                     ),
                                     height: 90,
                                     width: 90,
-                                    padding: EdgeInsets.all(14),
-                                    child:  CachedNetworkImage(
-                                      imageUrl: widget.saleItem.user.image??Env.dummyProfilePic,
-                                      fit: BoxFit.fill,
-                                      height: 90,
-                                      width: 90,
-                                      errorWidget: (context, url, error) => CachedNetworkImage(imageUrl: Env.dummyProfilePic),
+                                    child:  ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: CachedNetworkImage(
+                                        imageUrl: widget.saleItem.user.image??Env.dummyProfilePic,
+                                        fit: BoxFit.fill,
+                                        height: 90,
+                                        width: 90,
+                                        errorWidget: (context, url, error) => CachedNetworkImage(imageUrl: Env.dummyProfilePic),
+                                      ),
                                     )
                                 )
                               ],

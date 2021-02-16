@@ -78,7 +78,6 @@ class _AddVideoPageState extends State<AddVideoPage> {
                     Navigator.of(context).pop();
                     // Navigator.of(context).pushNamedAndRemoveUntil(GoalDetailsPage.routeName, ModalRoute.withName(HomePage.routeName), arguments: _selectedGoal);
                   } else if (state is VideoError) {
-                    print("error2: "+state.message);
                     setState(() {reqStatus=0;});
                     showInSnackBar(state.message, context, _scaffoldKey);
                   }
@@ -133,7 +132,7 @@ class _AddVideoPageState extends State<AddVideoPage> {
         if(video==null)
           showInSnackBar(AppLocalizations.of(context).translate("upload video"), context, _scaffoldKey);
         _videoBloc..add(StoreVideo(
-          new AdVideo( name: videoData['name'], targetViews: videoData['target_views'], link:  videoData['link'],ageFrom:  videoData['age_from'],ageTo: videoData['age_to'],genders: jsonEncode(videoData['genders']),cities: jsonEncode(videoData['cities'])),
+          new AdVideo( name: videoData['name'], targetViews: videoData['target_views'], link:  videoData['link'],ageFrom:  videoData['age_from'],ageTo: videoData['age_to'],genders: videoData['genders'],cities: videoData['cities']),
             video
           ));
       } catch (error) {

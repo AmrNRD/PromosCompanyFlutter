@@ -110,6 +110,21 @@
     "You don't have any ad yet you can press add button to start add one": "You don't have any ad yet you can press add button to start add one",
     "address": "Address",
     "delete": "Delete",
-    "Successful": "Successful"
-
+    "Successful": "Successful",
+    "sales": "Sales",
+    "videos": "Videos",
+    "add": "Add",
+    "update_profile": "Update profile",
+    "inactive": "In-active",
+    "active": "Active",
+    "done": "Done",
+    "disable": "Disable",
+    "enable": "Enable",
+    "New Sale item": "New Sale item",
+    "Name Of the product": "Name Of the product",
+    "title": "Title",
+    "enter photos": "Enter photos here supported(JPEG,PNG)",
+    "number_of_views": "%s Views",
+    "targeted_views": "%s Targeted views",
+    "save": "Save"
 }

@@ -14,8 +14,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class VideoRepository {
   Future<List<AdVideo>> getAllAdVideo();
-
   Future storeAdVideo(AdVideo adVideo, File video);
+  Future<AdVideo> enable(AdVideo saleItem);
+  Future<AdVideo> disable(AdVideo saleItem);
 }
 
 class VideoDataRepository implements VideoRepository {
@@ -41,5 +42,19 @@ class VideoDataRepository implements VideoRepository {
 
     AdVideo updatedPost = AdVideo.fromJson(responseData['data']);
     return updatedPost;
+  }
+
+  @override
+  Future<AdVideo> disable(AdVideo saleItem) async {
+    final responseData = await APICaller.postData("/ad_videos/deactivate/"+saleItem.id.toString(),authorizedHeader: true);
+    AdVideo updateAdVideo=AdVideo.fromJson(responseData['data']);
+    return updateAdVideo;
+  }
+
+  @override
+  Future<AdVideo> enable(AdVideo saleItem) async {
+    final responseData = await APICaller.postData("/ad_videos/activate/"+saleItem.id.toString(),authorizedHeader: true);
+    AdVideo updateAdVideo=AdVideo.fromJson(responseData['data']);
+    return updateAdVideo;
   }
 }

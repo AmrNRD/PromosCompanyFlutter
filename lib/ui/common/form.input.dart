@@ -81,9 +81,11 @@ class _FormInputFieldState extends State<FormInputField> {
         textInputAction: widget.nextFocusNode != null ? TextInputAction.next : TextInputAction.done,
         onEditingComplete: () {
           widget.focusNode.unfocus();
+          print('here');
         },
         onFieldSubmitted: (term) {
           widget.focusNode.unfocus();
+          print('here');
           if(widget.onFieldSubmitted!=null)
             widget.onFieldSubmitted();
           else if (widget.nextFocusNode != null)

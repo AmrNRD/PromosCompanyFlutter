@@ -36,7 +36,7 @@ class AdVideoForm extends StatefulWidget {
   final String buttonText;
   final File video;
 
-  const AdVideoForm({Key key,@required  this.scaffoldKey,@required  this.formKey,@required  this.onSave,@required  this.submit,@required  this.defaultData,@required this.status,@required this.setVideo, this.buttonText="Add", this.video}) : super(key: key);
+  const AdVideoForm({Key key,@required  this.scaffoldKey,@required  this.formKey,@required  this.onSave,@required  this.submit,@required  this.defaultData,@required this.status,@required this.setVideo, this.buttonText="add", this.video}) : super(key: key);
   @override
   _AdVideoFormState createState() => _AdVideoFormState();
 }
@@ -282,19 +282,18 @@ class _AdVideoFormState extends State<AdVideoForm> {
 
   @override
   void dispose() {
-    nameController.dispose();
-    videoLinkController.dispose();
-    focusNodeName.dispose();
-    targetViewsController.dispose();
-    focusNodeLink.dispose();
-    _controller.dispose();
+    nameController?.dispose();
+    videoLinkController?.dispose();
+    focusNodeName?.dispose();
+    targetViewsController?.dispose();
+    focusNodeLink?.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   Future<void> getVideo() async {
 
-    PickedFile video = await ImagePicker().getVideo(source: ImageSource.gallery);
-    File file=File(video.path);
+     File file = await ImagePicker.pickVideo(source: ImageSource.gallery);
 
     _controller = VideoPlayerController.file(file)
       ..initialize().then((_) {

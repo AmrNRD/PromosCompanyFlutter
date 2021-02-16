@@ -22,7 +22,7 @@ class UserCircularPhoto extends StatelessWidget {
       height: size,
       width: size,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(100.0),
+        borderRadius: BorderRadius.circular(20.0),
         child: fromFile
             ? Image.file(
                 photo,
