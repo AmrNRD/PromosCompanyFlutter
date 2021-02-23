@@ -69,7 +69,7 @@ AppTheme(String fontFamily){
     headline4: headline4.copyWith(color: AppColors.customGreyLevels[100]),
     headline5: headline5.copyWith(color: AppColors.customGreyLevels[100]),
     button: button.copyWith(color: AppColors.customGreyLevels[100]),
-    caption: caption.copyWith(color: AppColors.customGreyLevels[200]),
+    caption: caption.copyWith(color: AppColors.customGreyLevels[100]),
     bodyText1: body.copyWith(color: AppColors.customGreyLevels[100]),
     bodyText2: bodySmall.copyWith(color: AppColors.customGreyLevels[100]),
     subtitle1: input.copyWith(color: AppColors.customGreyLevels[100]),

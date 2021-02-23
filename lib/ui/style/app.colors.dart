@@ -21,7 +21,7 @@ class AppColors {
     0xFF161615,
     <int, Color>{
       50: Color(0xFF161615),
-      100: Color(0xFF979797),
+      100: Color(0xFF898989),
       200: Color(0xFFE4E4E4),
       300: Color(0xFFF8F8F8),
       400: Color(0xFFF5F5F5),

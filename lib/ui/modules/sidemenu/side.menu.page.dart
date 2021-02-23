@@ -26,10 +26,6 @@ class _SideMenuPageState extends State<SideMenuPage> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Align(
-            alignment: Alignment.bottomCenter,
-            child:Container(height: screenAwareSize(735.25, context),width: screenAwareWidth(324, context),child: Opacity(opacity:0.2,child: Image.asset("assets/images/logo2.png",height: screenAwareSize(735.25, context),width: screenAwareWidth(324, context),))),
-          ),
           SafeArea(
             child:  SingleChildScrollView(
               child: Container(
